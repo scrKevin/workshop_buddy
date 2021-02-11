@@ -15,7 +15,7 @@ const routerFactory = new RouterFactory({
 
 import './routes'
 
-// import router from './routes'
+
 
 Meteor.startup(() => {
   const router = routerFactory.create()
@@ -25,10 +25,3 @@ Meteor.startup(() => {
   }).$mount('#app');
 });
 
-// Meteor.startup(() => {
-//   // Vue.use(VueMeteorTracker)
-//   new Vue({
-//     router,
-//     render: (h) => h(App),
-//   }).$mount('#app');
-// });
