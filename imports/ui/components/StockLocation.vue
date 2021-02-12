@@ -5,7 +5,7 @@
     </button>
  
     <span class="text">
-      {{ this.supplier.name }}
+      {{ this.stockLocation.name }}
     </span>
   </li>
 </template>
@@ -14,13 +14,13 @@
 // import Skills from "../../api/collections/Skills";
 
 export default {
-  props: ["supplier"],
+  props: ["stockLocation"],
   data() {
     return {};
   },
   methods: {
-    deleteThisSkill() {
-      Meteor.call("skills.remove", this.supplier._id);
+    deleteThis() {
+      Meteor.call("stockLocations.remove", this.stockLocation._id);
     }
   }
 };

@@ -1,6 +1,11 @@
 <template>
   <div>
     <h2>Orderables</h2>
+    <input
+        type="text"
+        placeholder="filter"
+        v-model="filter"
+      />
     <form className="new-task" @submit.prevent="handleSubmit">
       <input
         type="text"
@@ -10,7 +15,7 @@
     </form>
     <ul>
       <Orderable
-        v-for="orderable in orderables"
+        v-for="orderable in filteredList"
         v-bind:key="orderable._id"
         v-bind:orderable="orderable"
       />
@@ -30,6 +35,7 @@ export default {
   data() {
     return {
       newOrderable: "",
+      filter:""
     };
   },
   meteor: {
@@ -47,6 +53,13 @@ export default {
       this.newOrderable = ""
     }
   },
+  computed: {
+    filteredList() {
+      return this.orderables.filter(orderable => {
+        return orderable.name.toLowerCase().includes(this.filter.toLowerCase())
+      })
+    }
+  }
 };
 </script>
 

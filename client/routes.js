@@ -8,6 +8,7 @@ import Login from '../imports/ui/components/Login.vue'
 import Settings from '../imports/ui/components/Settings.vue'
 import Info from '../imports/ui/components/Info.vue'
 import Orderables from '../imports/ui/components/Orderables.vue'
+import StockLocations from '../imports/ui/components/StockLocations.vue'
 
 RouterFactory.configure(factory => {
   // Simple routes
@@ -31,6 +32,11 @@ RouterFactory.configure(factory => {
       path: '/orderables',
       name: 'orderables',
       component: Orderables
+    },
+    {
+      path: '/stock',
+      name: 'stock',
+      component: StockLocations
     }
   ])
 })

@@ -19,6 +19,8 @@ Meteor.methods({
   'suppliers.remove'(supplierId) {
     check(supplierId, String);
 
+    Meteor.call('orderables.removeSupplier', supplierId)
+
     return Suppliers.remove(supplierId);
   }
 });
