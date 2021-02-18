@@ -6,7 +6,6 @@
     <Skills />
     <Permissions />
     <Suppliers />
-    <!-- <ProcessProperties /> -->
   </div>
 </template>
  
@@ -14,14 +13,12 @@
 import { Meteor } from "meteor/meteor";
 import Permissions from "./Permissions.vue";
 import Skills from "./Skills.vue";
-import ProcessProperties from "./ProcessProperties.vue";
 import Suppliers from "./Suppliers.vue"
  
 export default {
   components: {
     Skills,
     Permissions,
-    ProcessProperties,
     Suppliers
   },
   data() {

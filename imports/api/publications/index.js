@@ -1,7 +1,6 @@
 import './links'
 import './skills'
 import './permissions'
-import './processProperties'
 import './suppliers'
 import './orderables'
 import './stockLocations'
