@@ -1,5 +1,12 @@
 <template>
   <div id="login" v-if='user'>
+    <nav>
+      <a href="/">Dashboard</a>
+      <a href="/settings">Settings</a>
+      <a href="/stock">Stock</a>
+      <a href="/products">Products</a>
+      <a href="/orderables">Orderables</a>
+    </nav>
     <button type="button" v-on:click="logout()">Logout</button>
   </div>
   <div id="login" v-else>
