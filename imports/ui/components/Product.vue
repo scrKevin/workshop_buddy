@@ -15,16 +15,25 @@
           </option>
         </select>
         <input type="number" v-model="new_amount" name="amount" placeholder="Amount" required>
-        <input type="submit" name="submit" @click="submit($event)" value="Add new orderable">
+        <input type="submit" name="submit" @click="submit($event, 'orderable')" value="Add new orderable">
+      </form>
+      <form class="info-link-add">
+        <select v-model="selected">
+          <option v-for="product in products" v-bind:value="product._id">
+            {{ product.name }}
+          </option>
+        </select>
+        <input type="number" v-model="new_amount" name="amount" placeholder="Amount" required>
+        <input type="submit" name="submit" @click="submit($event, 'sub-product')" value="Add new sub-product">
       </form>
     </p>
     <ul>
-      <li v-for="item in this.product.items">
+      <li v-for="item in this.product.items" v-if="Object.keys(itemHash).length > 0">
         <button className="delete" @click="deleteItem(item.id)">
           ×
         </button>
         <a>
-          ({{item.amount}}x) {{getItemName(item.id)}}
+          ({{item.amount}}x) {{itemHash[item.type][item.id].name}} {{item.type}}
         </a>
 <!--         <input type="url" v-model="supplier.product_url" name="url" placeholder="Url">
         <button className="delete" @click="saveUrl(supplier.id, supplier.product_url)">
@@ -38,6 +47,7 @@
 <script>
 import { Meteor } from "meteor/meteor";
 import Orderables from "../../api/collections/Orderables.js";
+import Products from "../../api/collections/Products.js";
 
 export default {
   props: ["product"],
@@ -50,10 +60,14 @@ export default {
   meteor: {
     $subscribe: {
       'orderables': [],
+      'products': []
     },
     orderables () {
       return Orderables.find({})
     },
+    products () {
+      return Products.find({})
+    }
   },
   methods: {
     getItemName(id){
@@ -67,9 +81,9 @@ export default {
     deleteThis() {
       Meteor.call("products.remove", this.product._id);
     },
-    submit(event) {
+    submit(event, type) {
       event.preventDefault()
-      Meteor.call('product.addOrderable', this.product._id, this.selected, this.new_amount, (error) => {
+      Meteor.call('product.addItem', this.product._id, this.selected, this.new_amount, type, (error) => {
         if (error) {
           alert(error.error)
         } else {
@@ -85,6 +99,21 @@ export default {
     //   // alert(supplierName)
     //   Meteor.call('orderable.supplier.updateProductUrl', this.orderable._id, supplierId, product_url);
     // }
+  },
+  computed: {
+    itemHash (){
+      var hash = {'orderable':{}, 'sub-product':{}}
+      for (orderable of this.orderables)
+      {
+        hash['orderable'][orderable._id] = orderable
+      }
+      for (product of this.products)
+      {
+        hash['sub-product'][product._id] = product
+      }
+      console.log(hash)
+      return hash
+    }
   }
 };
 </script>

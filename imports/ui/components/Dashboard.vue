@@ -21,17 +21,42 @@
       </ul>
     </p>
     <p>
-      <h2>To Produce:</h2>
+      <h2>To Order</h2>
       <ul>
-        <li v-for="pqueueItem in producible" v-if="Object.keys(productsHash).length > 0 && Object.keys(stockHash).length > 0">
-          {{ productsHash[pqueueItem.productId].name }}
+        <li v-for="(amount, key) in orderable" v-if="Object.keys(orderablesHash).length > 0">
+          {{-1*amount}}x {{orderablesHash[key].name}}
         </li>
       </ul>
     </p>
     <p>
+      <h1>Debug:</h1>
+      <h2>ProductionQueue</h2>
+      <p>{{productionqueue}}</p>
+      <h2>OrderablesHash</h2>
+      <p>{{orderablesHash}}</p>
+      <h2>orderable</h2>
+      <p>{{orderable}}</p>
+      <h2>ProductsHash</h2>
+      <p>{{productsHash}}</p>
+      <h2>Producible</h2>
+      <p>{{producible}}</p>
+      <h2>stockHash</h2>
+      <p>{{stockHash}}</p>
+      <h2>StockLocations</h2>
+      <p>{{stockLocations}}</p>
+    </p>
+    <!-- <p>
+      <h2>To Produce:</h2>
+      <ul>
+        <li v-for="pqueueItem in producible" v-if="toProduce">
+          {{ productsHash[pqueueItem.productId].name }}
+        </li>
+      </ul>
+    </p> -->
+<!--     <p>
       <h2>To Order:</h2>
-      <ul v-if="Object.keys(toOrder).length > 0">
-        <li v-for="(amount, key) in toOrder" v-if="amount < 0 && Object.keys(orderablesHash).length > 0">
+      <ul v-if="toOrder">
+        <li v-for="(amount, key) in toOrder">
           {{-1*amount}}x {{orderablesHash[key].name}}
           <ul>
             <li v-for="supplier in orderablesHash[key].suppliers">
@@ -40,7 +65,7 @@
           </ul>
         </li>
       </ul>
-    </p>
+    </p> -->
   </div>
 </template>
 
@@ -54,8 +79,13 @@ import Suppliers from "../../api/collections/Suppliers.js";
 export default {
   data() {
     return {
-      selected: ""
+      selected: "",
+      toProduce: null,
+      toOrder: null,
     }
+  },
+  created(){
+
   },
   meteor: {
     $subscribe: {
@@ -88,23 +118,57 @@ export default {
     },
     deleteProduction(productionId){
       Meteor.call("productionqueue.remove", productionId);
+    },
+    addOrderables(tO, takenProducts, item){
+      if (item.type == "orderable")
+      {
+        if (item.id in tO)
+        {
+          tO[item.id] += Number(item.amount)
+        }
+        else
+        {
+          tO[item.id] = Number(item.amount)
+        }
+      }
+      else if(item.type == "sub-product")
+      {
+        var inStock = false
+        if (item.id in takenProducts)
+        {
+          if (takenProducts[item.id] > 0)
+          {
+            takenProducts[item.id]--
+            inStock = true
+          }
+        }
+        if (!inStock)
+        {
+          for (subItem of this.productsHash[item.id].items)
+          {
+            for (i = 0; i < Number(item.amount); i++)
+            {
+
+              this.addOrderables(tO, takenProducts, subItem)
+            }
+          }
+        }
+      }
     }
   },
   computed: {
-    toOrder(){
+    orderable(){
       tO = {}
+      var takenProducts = {...this.stockHash["sub-product"]}
+
+      //takenProducts = this.stockHash['sub-product']
+      // console.log(this.productionqueue)
       for (pqueueItem of this.productionqueue)
       {
         for (item of this.productsHash[pqueueItem.productId].items)
         {
-          if (item.id in tO)
-          {
-            tO[item.id] += Number(item.amount)
-          }
-          else
-          {
-            tO[item.id] = Number(item.amount)
-          }
+          console.log(item)
+          this.addOrderables(tO, takenProducts, item)
         }
       }
       // console.log(this.stockHash)
@@ -183,7 +247,7 @@ export default {
       return hash
     },
     stockHash(){
-      sHash = {'orderable':{}}
+      sHash = {'orderable':{}, 'sub-product':{}}
       for (stockLocation of this.stockLocations){
         for (item of stockLocation.items)
         {
@@ -197,6 +261,7 @@ export default {
           }
         }
       }
+      console.log(sHash)
       return sHash
     }
   }

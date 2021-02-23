@@ -17,8 +17,8 @@ Meteor.methods({
 
     return Products.remove(productId);
   },
-  'product.addOrderable'(productId, orderableId, amount) {
-    return Products.update({_id: productId}, {$push:{items: {id:orderableId, type: 'orderable', amount:amount}}})
+  'product.addItem'(productId, orderableId, amount, type) {
+    return Products.update({_id: productId}, {$push:{items: {id:orderableId, type: type, amount:amount}}})
   },
   'product.removeItem'(productId, itemId){
     return Products.update({_id: productId}, {$pull:{items: {id: itemId}}})

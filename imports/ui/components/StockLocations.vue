@@ -20,6 +20,10 @@
         v-bind:stockLocation="stockLocation"
       />
     </ul>
+    <p>
+      <h1>Debug:</h1>
+      <p>{{stockLocations}}</p>
+    </p>
   </div>
 </template>
 
@@ -29,6 +33,7 @@ import { Meteor } from "meteor/meteor";
 import StockLocation from "./StockLocation.vue";
 import StockLocations from "../../api/collections/StockLocations.js";
 import Orderables from "../../api/collections/Orderables.js"
+import Products from "../../api/collections/Products.js"
 
 export default {
   components: {
@@ -43,13 +48,17 @@ export default {
   meteor: {
     $subscribe: {
       'stockLocations': [],
-      'orderables': []
+      'orderables': [],
+      'products': []
     },
     stockLocations() {
       return StockLocations.find({})
     },
     orderables() {
       return Orderables.find({})
+    },
+    products() {
+      return Products.find({})
     }
   },
   methods: {
@@ -67,6 +76,9 @@ export default {
       var itemsHash = {}
       this.orderables.forEach(function(orderable){
         itemsHash[orderable._id] = orderable
+      })
+      this.products.forEach(function(product){
+        itemsHash[product._id] = product
       })
       // console.log(itemsHash)
       if (Object.keys(itemsHash).length > 0)
